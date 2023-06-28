@@ -1,0 +1,40 @@
+<h3 class="m-3">Grafico de Donut</h3>
+<hr />
+<div class="row">
+  <div class="col-sm-6 mx-auto">
+    <div>
+      <canvas
+        baseChart
+        width="400"
+        height="400"
+        [data]="doughnutChartData"
+        [labels]="doughnutChartLabels"
+        [chartType]="doughnutChartType"
+      ></canvas>
+    </div>
+    <button
+      mat-button
+      mat-raised-button
+      class="btn btn-4 btn-block mx-auto w-25"
+      (click)="randomize()"
+    >
+      Aleatorio
+    </button>
+  </div>
+  <div>
+    <button mat-button mat-raised-button color="primary" (click)="sieteDias()">
+      Ultimos 7 días
+    </button>
+    <button mat-button mat-raised-button color="primary" (click)="quinceDias()">
+      Ultimos 15 días
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      color="primary"
+      (click)="treintaDias()"
+    >
+      Ultimo mes
+    </button>
+  </div>
+</div>

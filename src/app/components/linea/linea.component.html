@@ -1,0 +1,75 @@
+<h3 class="m-3">Gráfico de Líneas</h3>
+<hr />
+<div class="row">
+  <div class="col-sm-6 mx-auto">
+    <div>
+      <canvas
+        baseChart
+        width="400"
+        height="400"
+        [datasets]="lineChartData"
+        [labels]="lineChartLabels"
+        [options]="lineChartOptions"
+        [colors]="lineChartColors"
+        [legend]="lineChartLegend"
+        [chartType]="lineChartType"
+        (chartHover)="chartHovered($event)"
+        (chartClick)="chartClicked($event)"
+      ></canvas>
+    </div>
+  </div>
+  <div class="col-sm-6" *ngIf="more">
+    <table class="table table-responsive table-condensed">
+      <tr>
+        <th *ngFor="let label of lineChartLabels">{{ label }}</th>
+      </tr>
+      <tr *ngFor="let d of lineChartData; let i = index" [class]="'line-' + i">
+        <td *ngFor="let label of lineChartLabels; let j = index">
+          {{ d && d.data[j] }}
+        </td>
+      </tr>
+    </table>
+    <button mat-button mat-raised-button color="primary" (click)="sieteDias()">
+      Últimos 7 días
+    </button>
+    <button mat-button mat-raised-button color="primary" (click)="quinceDias()">
+      Últimos 15 días
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      color="primary"
+      (click)="treintaDias()"
+    >
+      Último mes
+    </button>
+    <!-- <button mat-button mat-raised-button color="primary" (click)="changeColor()">
+            Recolor
+        </button>
+        <button mat-button mat-raised-button color="primary" (click)="hideOne()">
+            Quitar/mostrar Test
+        </button>
+        <button mat-button mat-raised-button color="primary" (click)="changeLabel()">
+            Change Label
+        </button> -->
+    <p></p>
+    <button
+      mat-button
+      mat-raised-button
+      class="btn btn-4 btn-block mx-auto w-25"
+      (click)="more = false"
+    >
+      Cerrar
+    </button>
+  </div>
+  <div class="mas" *ngIf="more === false">
+    <button
+      mat-button
+      mat-raised-button
+      class="btn btn-4 btn-block"
+      (click)="more = true"
+    >
+      Mostar más
+    </button>
+  </div>
+</div>

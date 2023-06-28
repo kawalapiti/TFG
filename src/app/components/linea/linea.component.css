@@ -1,0 +1,6 @@
+/* Insertar estilos especificos del componente */
+.mas{
+    display: flex;
+    text-align: center;
+    align-self: center;
+}
