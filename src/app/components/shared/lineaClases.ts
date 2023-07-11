@@ -14,3 +14,9 @@ export class restultadoTest{
     fecha: Date;
     valor: number;
 }
+
+export class datos{
+    valor: number[];
+    dia: string;
+    media?: number;
+}

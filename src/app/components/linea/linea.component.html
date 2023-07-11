@@ -16,34 +16,6 @@
         (chartHover)="chartHovered($event)"
         (chartClick)="chartClicked($event)"
       ></canvas>
-      <!-- <canvas
-        baseChart
-        [datasets]="lineChartData"
-        [labels]="lineChartLabels"
-        [options]="lineChartOptions"
-        [legend]="lineChartLegend"
-        [chartType]="lineChartType"
-        (chartHover)="chartHovered($event)"
-        (chartClick)="chartClicked($event)"
-      >
-        <ng-container *ngIf="lineChartOptions?.scales">
-          <ng-container *ngFor="let xAxis of lineChartOptions.scales.xAxes">
-            <ng-container *ngIf="xAxis.id === 'x-axis-1'">
-            <ng-container *ngIf="xAxis.type === 'time'">
-              <ng-container
-                *ngFor="let timeFormat of xAxis.time?.displayFormats.day"
-              >
-              <span
-                class="chart-x-axis-time-format"
-                [attr.data-format]="xAxis.time?.displayFormats.day.format"
-                [attr.data-unit]="xAxis.time?.displayFormats.day.unit"
-              ></span>
-            </ng-container>
-          </ng-container>
-        </ng-container>
-         </ng-container>
-        </ng-container>
-      </canvas>-->
     </div>
   </div>
   <div class="col-sm-6" *ngIf="more">
@@ -71,15 +43,7 @@
     >
       Último mes
     </button>
-    <!-- <button mat-button mat-raised-button color="primary" (click)="changeColor()">
-            Recolor
-        </button>
-        <button mat-button mat-raised-button color="primary" (click)="hideOne()">
-            Quitar/mostrar Test
-        </button>
-        <button mat-button mat-raised-button color="primary" (click)="changeLabel()">
-            Change Label
-        </button> -->
+
     <p></p>
     <button
       mat-button

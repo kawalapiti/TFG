@@ -2,7 +2,7 @@ import { Component, ViewChild } from "@angular/core";
 import { ChartDataSets, ChartOptions } from "chart.js";
 import { Label, Color, BaseChartDirective } from "ng2-charts";
 import { GetDataService } from "../shared/get-data.service";
-import { dataResponse, restultadoTest} from "../shared/lineaClases";
+import { dataResponse, datos, restultadoTest} from "../shared/lineaClases";
 import * as moment from "moment";
 
 @Component({
@@ -13,52 +13,26 @@ import * as moment from "moment";
 export class LineaComponent {
   more: boolean = false;
 
-  /*public lineChartData: ChartDataSets[] = [
+  public lineChartData: ChartDataSets[] = [
     { data: [], label: "Nivel de ánimo", yAxisID: "y-axis-1" },
-    { data: [28, 48, 40, 19, 86, 27, 90], label: "Test depresión" },
-    { data: [12, 34, 28, 16, 20, 22, 14], label: "Test rumiación" },
-  ];*/
+    { data: [], label: "Test depresión" },
+    { data: [], label: "Test rumiación" },
+  ];
   public testRumiacion: restultadoTest[] = [];
   public testDepresion: restultadoTest[] = [];
   public testAnimo: restultadoTest[] = [];
+  public datosAnimo: datos[] = [];
+  public datosDep: datos[] = [];
+  public datosRum: datos[] = [];
 
-  public lineChartData: ChartDataSets[] = []
+  //public lineChartData: ChartDataSets[] = []
   public lineChartLabels: Label[] = [];
 
   public lineChartOptions: ChartOptions & { annotation: any } = {
     responsive: true,
     scales: {
       // We use this empty structure as a placeholder for dynamic theming.
-      xAxes: [{      
-        id: "x-axis-1",
-        type: 'time',
-        time: {
-          unit: 'day',
-          displayFormats: {
-            day: 'YYYY-MM-DD'
-          }
-        }
-        },
-        {      
-          id: "x-axis-2",
-          type: 'time',
-          time: {
-            unit: 'day',
-            displayFormats: {
-              day: 'YYYY-MM-DD'
-            }
-          }
-          },
-          {      
-            id: "x-axis-3",
-            type: 'time',
-            time: {
-              unit: 'day',
-              displayFormats: {
-                day: 'YYYY-MM-DD'
-              }
-            }
-            }],
+      xAxes: [{}],
       yAxes: [
         {
           id: "y-axis-0",
@@ -126,53 +100,16 @@ export class LineaComponent {
   ];
   public lineChartLegend = true;
   public lineChartType = "line";
+  private user;
+  private fechaActual = new Date();
 
   @ViewChild(BaseChartDirective, { static: true }) chart: BaseChartDirective;
 
   constructor(private getDataService: GetDataService) {}
 
   ngOnInit() {
-    /*for(let i = 0; i<10; i++){
-      this.lineChartData[0].data.push(i);
-      console.log(this.lineChartData[0]);
-    }*/
-    this.getDataService.makeHttpGetRequest().subscribe(
-      (response: dataResponse) => {
-        for (let clave in response) {
-          console.log(response[clave].enunciado)
-          if (response[clave].enunciado === '¿Cómo te encuentras hoy?') {
-            this.testAnimo.push({fecha: new Date(response[clave].fecha.split(" ")[0]), valor: parseInt(response[clave].respuesta)})
-          }else if (response[clave].enunciado === 'Test depresión') {
-            this.testDepresion.push({fecha: new Date(response[clave].fecha.split(" ")[0]), valor: parseInt(response[clave].respuesta)})
-          }else if (response[clave].enunciado === 'Test rumiación') {
-            this.testDepresion.push({fecha: new Date(response[clave].fecha.split(" ")[0]), valor: parseInt(response[clave].respuesta)})
-          }
-            /*let number = parseInt(response[clave].respuesta);
-            console.log(number);
-            this.lineChartData[0].data.push(parseInt(response[clave].respuesta));
-            this.lineChartLabels.push(response[clave].fecha.split(" ")[0])*/
-          
-        }
-        this.makeChart();
-      },
-      (error) => {
-        console.error("Error:", error);
-      }
-    );
-
-  }
-
-  public randomize(): void {
-    for (let i = 0; i < this.lineChartData.length; i++) {
-      for (let j = 0; j < this.lineChartData[i].data.length; j++) {
-        this.lineChartData[i].data[j] = this.generateNumber(i);
-      }
-    }
-    this.chart.update();
-  }
-
-  private generateNumber(i: number) {
-    return Math.floor(Math.random() * (i < 2 ? 100 : 1000) + 1);
+    this.user = JSON.parse(localStorage.getItem('usuario'));
+    this.sieteDias();
   }
 
   // events
@@ -196,181 +133,147 @@ export class LineaComponent {
     console.log(event, active);
   }
 
-  public hideOne() {
-    const isHidden = this.chart.isDatasetHidden(1);
-    this.chart.hideDataset(1, !isHidden);
-  }
-
-  public pushOne() {
-    const moreData = [6, 7, 4, 2, 5, 8, 10];
-    moreData.forEach((data) => {
-      this.lineChartData[0].data.push(data);
-    });
-    this.lineChartData.forEach((x, i) => {
-      const num = this.generateNumber(i);
-      const data: number[] = x.data as number[];
-      data.push(num);
-    });
-    const moreLabels: Label[] = [
-      "08-03",
-      "09-03",
-      "10-01",
-      "11-01",
-      "12-03",
-      "13-03",
-      "14-03",
-    ];
-    moreLabels.forEach((label) => {
-      //this.lineChartLabels.push(label);
-    });
-  }
-
-  public changeColor() {
-    this.lineChartColors[1].borderColor = "green";
-    this.lineChartColors[1].backgroundColor = `rgba(0, 255, 0, 0.3)`;
-  }
-
-  public changeLabel() {
-    //this.lineChartLabels[1] = ["1st Line", "2nd Line"];
-    // this.chart.update();
-  }
-
   public sieteDias() {
-    this.lineChartData = [
-      {
-        data: [3, 2, 4, 8, 5, 10, 10],
-        label: "Nivel de ánimo",
-        yAxisID: "y-axis-1",
-      },
-      { data: [28, 48, 40, 19, 86, 27, 90], label: "Test de Beck" },
-      { data: [12, 34, 28, 16, 20, 22, 14], label: "Test GDS" },
-    ];
+    this.getChartLabel(7);
+    let fechaInicio = new Date(this.fechaActual);
+    fechaInicio.setDate(this.fechaActual.getDate() - 7);
 
-    this.lineChartLabels = [
-      "01-03",
-      "02-03",
-      "03-01",
-      "04-01",
-      "05-03",
-      "06-03",
-      "07-03",
-    ];
+    let fechaFormateada = this.getDateFormat(fechaInicio);
+    this.request(fechaFormateada);
   }
 
   public quinceDias() {
-    this.lineChartData = [
-      {
-        data: [3, 2, 4, 8, 5, 10, 10, 3, 2, 4, 8, 5, 10, 10],
-        label: "Nivel de ánimo",
-        yAxisID: "y-axis-1",
-      },
-      {
-        data: [28, 48, 40, 19, 86, 27, 90, 28, 48, 40, 19, 86, 27, 90],
-        label: "Test de Beck",
-      },
-      {
-        data: [12, 34, 28, 16, 20, 22, 14, 12, 34, 28, 16, 20, 22, 14],
-        label: "Test GDS",
-      },
-    ];
+    let fechaInicio = new Date(this.fechaActual);
+    fechaInicio.setDate(this.fechaActual.getDate() - 15);
 
-    this.lineChartLabels = [
-      "01-03",
-      "02-03",
-      "03-01",
-      "04-01",
-      "05-03",
-      "06-03",
-      "07-03",
-      "08-03",
-      "09-03",
-      "10-01",
-      "11-01",
-      "12-03",
-      "13-03",
-      "14-03",
-    ];
+    let fechaFormateada = this.getDateFormat(fechaInicio);
+    this.request(fechaFormateada);
+    this.getChartLabel(15);
   }
 
   public treintaDias() {
-    this.lineChartData = [
-      {
-        data: [
-          3, 2, 4, 8, 5, 10, 10, 3, 2, 4, 8, 5, 10, 10, 3, 2, 4, 8, 5, 10, 10,
-          3, 2, 4, 8, 5, 10, 10,
-        ],
-        label: "Nivel de ánimo",
-        yAxisID: "y-axis-1",
-      },
-      {
-        data: [
-          28, 48, 40, 19, 86, 27, 90, 28, 48, 40, 19, 86, 27, 90, 28, 48, 40,
-          19, 86, 27, 90, 28, 48, 40, 19, 86, 27, 90,
-        ],
-        label: "Test de Beck",
-      },
-      {
-        data: [
-          12, 34, 28, 16, 20, 22, 14, 12, 34, 28, 16, 20, 22, 14, 12, 34, 28,
-          16, 20, 22, 14, 12, 34, 28, 16, 20, 22, 14,
-        ],
-        label: "Test GDS",
-      },
-    ];
+    let fechaInicio = new Date(this.fechaActual);
+    fechaInicio.setDate(this.fechaActual.getDate() - 30);
 
-    this.lineChartLabels = [
-      "01-03",
-      "02-03",
-      "03-01",
-      "04-01",
-      "05-03",
-      "06-03",
-      "07-03",
-      "08-03",
-      "09-03",
-      "10-01",
-      "11-01",
-      "12-03",
-      "13-03",
-      "14-03",
-      "01-03",
-      "02-03",
-      "03-01",
-      "04-01",
-      "05-03",
-      "06-03",
-      "07-03",
-      "08-03",
-      "09-03",
-      "10-01",
-      "11-01",
-      "12-03",
-      "13-03",
-      "14-03",
-    ];
+    let fechaFormateada = this.getDateFormat(fechaInicio);
+    this.request(fechaFormateada);
+    this.getChartLabel(30);
   }
 
-  makeChart(){
-    this.testAnimo.forEach(resultado => {
-      this.lineChartData.push({ data: [{ x: resultado.fecha, y: resultado.valor }], label: 'Nivel de ánimo', xAxisID: 'x-axis-1' });
-    });
-    
-    this.testDepresion.forEach(resultado => {
-      this.lineChartData.push({ data: [{ x: resultado.fecha, y: resultado.valor }], label: 'Test depresión', xAxisID: 'x-axis-2' });
-    });
-    
-    this.testRumiacion.forEach(resultado => {
-      this.lineChartData.push({ data: [{ x: resultado.fecha, y: resultado.valor }], label: 'Test rumiación', xAxisID: 'x-axis-3' });
-    });
+  public getDateFormat(date){
+    let year = date.getFullYear();
+    let month = (date.getMonth() + 1).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
 
-    console.log(this.testAnimo);
-    console.log(this.testDepresion);
-    console.log(this.testRumiacion);
+    let fechaFormateada = `${year}-${month}-${day}`;
+    return fechaFormateada;
+  }
 
-    const labels1 = this.testAnimo.map(resultado => moment(resultado.fecha).format('YYYY-MM-DD'));
-    const labels2 = this.testDepresion.map(resultado => moment(resultado.fecha).format('YYYY-MM-DD'));
-    const labels3 = this.testRumiacion.map(resultado => moment(resultado.fecha).format('YYYY-MM-DD'));
+  public getChartLabel(days){
+    this.lineChartLabels = [];
+    let fechaInicio = new Date(this.fechaActual);
+    for(let i=(days-1);i>=0;i--){
+      fechaInicio = new Date(this.fechaActual); 
+      fechaInicio.setDate(this.fechaActual.getDate() - i);
+      let fechaFormateada = this.getDateFormat(fechaInicio);
+      this.lineChartLabels.push(fechaFormateada);
+    }
+  }
 
-this.lineChartLabels = [...labels1, ...labels2, ...labels3];
+  public calculaMedia(array: datos[]){
+    array.forEach(e => {
+      let acum = e.valor.reduce((acumulador, valor) => acumulador + valor, 0);
+      e.media = acum/e.valor.length;
+    });
+  }
+
+  public rellenaDatos(){
+    this.lineChartData = [
+      { data: [], label: "Nivel de ánimo", yAxisID: "y-axis-1" },
+      { data: [], label: "Test depresión" },
+      { data: [], label: "Test rumiación" },
+    ];
+    this.lineChartLabels.forEach(day =>  {
+      let datoA = this.datosAnimo.find(dato => dato.dia === day);
+      if(datoA){
+        this.lineChartData[0].data.push(datoA.media)
+      }else{
+        this.lineChartData[0].data.push(0);
+      }
+      let datoD = this.datosDep.find(dato => dato.dia === day);
+      if(datoD){
+        this.lineChartData[1].data.push(datoD.media)
+      }else{
+        this.lineChartData[1].data.push(0);
+      }
+      let datoR = this.datosRum.find(dato => dato.dia === day);
+      if(datoR){
+        this.lineChartData[2].data.push(datoR.media)
+      }else{
+        this.lineChartData[2].data.push(0);
+      }
+    })
+  }
+
+  public request(fechaFormateada){
+    this.datosAnimo = [];
+    this.datosDep = [];
+    this.datosRum = [];
+    this.getDataService.makeHttpGetRequest(this.user, fechaFormateada).subscribe(
+      (response: dataResponse) => {
+        for (let clave in response) {
+          if (response[clave].enunciado === 'Test ánimo') {
+            let valorEncontrado = false;
+            this.datosAnimo.forEach(e =>{
+              if(e.dia === response[clave].fecha.split(" ")[0]){
+                e.valor.push(parseInt(response[clave].respuesta));
+                valorEncontrado = true;
+              }
+            });
+            if(valorEncontrado === false){
+              let dia = response[clave].fecha.split(" ")[0];
+              let valor = [];
+              valor.push(parseInt(response[clave].respuesta));
+              this.datosAnimo.push({dia: dia, valor: valor});
+            }
+          }else if (response[clave].enunciado === 'Test depresión') {
+            let valorEncontrado = false;
+            this.datosDep.forEach(e =>{
+              if(e.dia === response[clave].fecha.split(" ")[0]){
+                e.valor.push(parseInt(response[clave].respuesta));
+                valorEncontrado = true;
+              }
+            });
+            if(valorEncontrado === false){
+              let dia = response[clave].fecha.split(" ")[0];
+              let valor = [];
+              valor.push(parseInt(response[clave].respuesta));
+              this.datosDep.push({dia: dia, valor: valor});
+            }
+          }else if (response[clave].enunciado === 'Test Rumiación') {
+            let valorEncontrado = false;
+            this.datosRum.forEach(e =>{
+              if(e.dia === response[clave].fecha.split(" ")[0]){
+                e.valor.push(parseInt(response[clave].respuesta));
+                valorEncontrado = true;
+              }
+            });
+            if(valorEncontrado === false){
+              let dia = response[clave].fecha.split(" ")[0];
+              let valor = [];
+              valor.push(parseInt(response[clave].respuesta));
+              this.datosRum.push({dia: dia, valor: valor});
+            }
+          }                     
+        }
+        this.calculaMedia(this.datosAnimo);
+        this.calculaMedia(this.datosDep);
+        this.calculaMedia(this.datosRum);
+        this.rellenaDatos();
+      },
+      (error) => {
+        console.error("Error:", error);
+      }
+    );
   }
 }
